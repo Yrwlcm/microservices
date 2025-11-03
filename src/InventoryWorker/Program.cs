@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Rebus.Bus;
 using Rebus.Config;
 using Rebus.Handlers;
-using Rebus.ServiceProvider;
 using Serilog;
 
 using var host = Host.CreateDefaultBuilder(args)
@@ -52,17 +51,9 @@ finally
     Log.CloseAndFlush();
 }
 
-internal sealed class OrderCreatedHandler : IHandleMessages<OrderCreated>
+internal sealed class OrderCreatedHandler(ILogger<OrderCreatedHandler> logger, Random random)
+    : IHandleMessages<OrderCreated>
 {
-    private readonly ILogger<OrderCreatedHandler> logger;
-    private readonly Random random;
-
-    public OrderCreatedHandler(ILogger<OrderCreatedHandler> logger, Random random)
-    {
-        this.logger = logger;
-        this.random = random;
-    }
-
     public async Task Handle(OrderCreated message)
     {
         logger.LogInformation("Received order {OrderId} with {ItemCount} item(s)", message.OrderId, message.Items.Count);

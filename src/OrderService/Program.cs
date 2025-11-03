@@ -1,9 +1,5 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using OrderService.Orders;
 using Rebus.Config;
-using Rebus.ServiceProvider;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,10 +51,10 @@ app.UseSwaggerUI(options =>
 
 app.MapPost("/order", (OrderRequest request, CreateOrderEndpoint endpoint, CancellationToken cancellationToken) =>
         endpoint.HandleAsync(request, cancellationToken))
-.WithName("CreateOrder")
-.Produces(StatusCodes.Status202Accepted)
-.ProducesValidationProblem()
-.Produces(StatusCodes.Status400BadRequest);
+    .WithName("CreateOrder")
+    .Produces(StatusCodes.Status202Accepted)
+    .ProducesValidationProblem()
+    .Produces(StatusCodes.Status400BadRequest);
 
 app.MapGet("/healthz", () => Results.Ok());
 

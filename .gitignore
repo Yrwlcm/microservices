@@ -1,3 +1,13 @@
-/.idea
-bin
-obj
+# JetBrains Rider settings
+.idea/
+*.DotSettings.user
+
+# Visual Studio artifacts
+.vs/
+*.user
+
+# Build outputs
+bin/
+obj/
+**/bin/
+**/obj/

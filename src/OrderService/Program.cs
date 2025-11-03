@@ -1,8 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using Contracts.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Rebus.Bus;
+using Microsoft.Extensions.Hosting;
+using OrderService.Orders;
 using Rebus.Config;
 using Rebus.ServiceProvider;
 using Serilog;
@@ -24,14 +23,22 @@ builder.Host.UseSerilog();
 builder.Services.AddHealthChecks();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddRebus(config => config
-    .Logging(l => l.Serilog())
-    .Transport(t => t.UseRabbitMq(builder.Configuration["Rabbit:ConnectionString"]!, "orders-api"))
-    .Options(o =>
-    {
-        o.SetNumberOfWorkers(1);
-        o.SetMaxParallelism(8);
-    }));
+builder.Services.AddSingleton<OrderRequestValidator>();
+builder.Services.AddScoped<CreateOrderEndpoint>();
+
+var isTesting = builder.Environment.IsEnvironment("Testing");
+
+if (!isTesting)
+{
+    builder.Services.AddRebus(config => config
+        .Logging(l => l.Serilog())
+        .Transport(t => t.UseRabbitMq(builder.Configuration["Rabbit:ConnectionString"]!, "orders-api"))
+        .Options(o =>
+        {
+            o.SetNumberOfWorkers(1);
+            o.SetMaxParallelism(8);
+        }));
+}
 
 var app = builder.Build();
 
@@ -46,26 +53,8 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = "swagger";
 });
 
-app.MapPost("/order", async (OrderRequest request, IBus bus, ILoggerFactory loggerFactory, CancellationToken cancellationToken) =>
-{
-    var validationErrors = Validate(request);
-    if (validationErrors.Count > 0)
-    {
-        return Results.BadRequest(new { errors = validationErrors });
-    }
-
-    var orderCreated = new OrderCreated(
-        request.OrderId,
-        request.Items.Select(i => new OrderItem(i.Sku, i.Qty)).ToList());
-
-    var logger = loggerFactory.CreateLogger("OrderPublisher");
-    logger.LogInformation("Publishing order {@OrderId} with {ItemCount} item(s)", request.OrderId, orderCreated.Items.Count);
-
-    cancellationToken.ThrowIfCancellationRequested();
-    await bus.Publish(orderCreated);
-
-    return Results.Accepted($"/order/{request.OrderId}", new { request.OrderId });
-})
+app.MapPost("/order", (OrderRequest request, CreateOrderEndpoint endpoint, CancellationToken cancellationToken) =>
+        endpoint.HandleAsync(request, cancellationToken))
 .WithName("CreateOrder")
 .Produces(StatusCodes.Status202Accepted)
 .ProducesValidationProblem()
@@ -78,52 +67,4 @@ app.MapGet("/", () => Results.Redirect("/swagger"))
 
 app.Run();
 
-static List<string> Validate(OrderRequest request)
-{
-    var errors = new List<string>();
-
-    if (request.OrderId == Guid.Empty)
-    {
-        errors.Add("orderId must be a non-empty GUID.");
-    }
-
-    if (request.Items is null || request.Items.Count == 0)
-    {
-        errors.Add("items must contain at least one entry.");
-        return errors;
-    }
-
-    for (var index = 0; index < request.Items.Count; index++)
-    {
-        var item = request.Items[index];
-        if (string.IsNullOrWhiteSpace(item.Sku))
-        {
-            errors.Add($"items[{index}].sku must be provided.");
-        }
-
-        if (item.Qty <= 0)
-        {
-            errors.Add($"items[{index}].qty must be greater than zero.");
-        }
-    }
-
-    return errors;
-}
-
-internal sealed record OrderRequest
-{
-    [Required]
-    public Guid OrderId { get; init; }
-
-    [Required]
-    public List<OrderLineRequest> Items { get; init; } = new();
-}
-
-internal sealed record OrderLineRequest
-{
-    [Required]
-    public string Sku { get; init; } = string.Empty;
-
-    [Range(1, int.MaxValue)]
-    public int Qty { get; init; }
-}
+public partial class Program;

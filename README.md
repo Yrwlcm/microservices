@@ -16,6 +16,7 @@
 dotnet --version
 dotnet restore OrderSample.sln
 dotnet build OrderSample.sln
+dotnet test OrderSample.sln
 docker compose up -d --build
 ```
 

@@ -1,8 +1,8 @@
-namespace OrderService.Orders;
+namespace OrderService.Models.Orders;
 
-internal sealed class OrderRequestValidator
+public class OrderRequestValidator
 {
-    public IReadOnlyList<string> Validate(OrderRequest request)
+    public static IReadOnlyList<string> Validate(OrderRequest request)
     {
         var errors = new List<string>();
 
@@ -11,13 +11,13 @@ internal sealed class OrderRequestValidator
             errors.Add("orderId must be a non-empty GUID.");
         }
 
-        if (request.Items is null || request.Items.Count == 0)
+        if (request.Items.Length == 0)
         {
             errors.Add("items must contain at least one entry.");
             return errors;
         }
 
-        for (var index = 0; index < request.Items.Count; index++)
+        for (var index = 0; index < request.Items.Length; index++)
         {
             var item = request.Items[index];
 
@@ -26,9 +26,9 @@ internal sealed class OrderRequestValidator
                 errors.Add($"items[{index}].sku must be provided.");
             }
 
-            if (item.Qty <= 0)
+            if (item.Quantity <= 0)
             {
-                errors.Add($"items[{index}].qty must be greater than zero.");
+                errors.Add($"items[{index}].quantity must be greater than zero.");
             }
         }
 

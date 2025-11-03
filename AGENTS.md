@@ -3,7 +3,6 @@
 ## Project Structure & Module Organization
 - Build outputs live under `bin/` and `obj/`; these folders are transient and should stay untracked.
 
-
 ## Coding Style & Naming Conventions
 - Follow conventional C# layout: 4-space indentation, braces on new lines, and `PascalCase` for classes/interfaces (`WordsStatisticsImpl`), `camelCase` for locals/fields, and `UPPER_CASE` only for constants.
 - Prefer expression clarity over cleverness; lean on `FluentAssertions` to keep tests declarative.

@@ -12,7 +12,7 @@ using Rebus.Bus;
 namespace OrderService.Tests;
 
 [TestFixture]
-public sealed class OrderEndpointTests
+public class OrderEndpointTests
 {
     private OrdersApiApplicationFactory? factory;
 
@@ -38,7 +38,7 @@ public sealed class OrderEndpointTests
             orderId = Guid.NewGuid(),
             items = new[]
             {
-                new { sku = "ABC", qty = 2 }
+                new { sku = "ABC", quantity = 2 }
             }
         });
 
@@ -73,42 +73,5 @@ public sealed class OrderEndpointTests
         var response = await client.GetAsync("/healthz");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    private sealed class OrdersApiApplicationFactory : WebApplicationFactory<Program>
-    {
-        protected override IHost CreateHost(IHostBuilder builder)
-        {
-            builder.UseEnvironment("Testing");
-
-            builder.ConfigureServices(services =>
-            {
-                var busDescriptors = services.Where(d => d.ServiceType == typeof(IBus)).ToList();
-                foreach (var descriptor in busDescriptors)
-                {
-                    services.Remove(descriptor);
-                }
-
-                var hostedServices = services
-                    .Where(d => d.ServiceType == typeof(IHostedService) &&
-                                d.ImplementationType?.Namespace?.StartsWith("Rebus", StringComparison.Ordinal) == true)
-                    .ToList();
-
-                foreach (var descriptor in hostedServices)
-                {
-                    services.Remove(descriptor);
-                }
-
-                services.AddSingleton(_ =>
-                {
-                    var bus = Substitute.For<IBus>();
-                    bus.Publish(Arg.Any<object>()).Returns(Task.CompletedTask);
-                    bus.Publish(Arg.Any<object>(), Arg.Any<IDictionary<string, string>>()).Returns(Task.CompletedTask);
-                    return bus;
-                });
-            });
-
-            return base.CreateHost(builder);
-        }
     }
 }

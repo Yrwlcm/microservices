@@ -1,4 +1,4 @@
-using OrderService.Orders;
+using OrderService.Models.Orders;
 using Rebus.Config;
 using Serilog;
 
@@ -17,10 +17,13 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 builder.Services.AddHealthChecks();
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddSingleton<OrderRequestValidator>();
-builder.Services.AddScoped<CreateOrderEndpoint>();
+builder.Services.AddSingleton<OrderMessageFactory>();
+builder.Services.AddScoped<IOrderPublisher, OrderPublisher>();
 
 var isTesting = builder.Environment.IsEnvironment("Testing");
 
@@ -49,14 +52,8 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = "swagger";
 });
 
-app.MapPost("/order", (OrderRequest request, CreateOrderEndpoint endpoint, CancellationToken cancellationToken) =>
-        endpoint.HandleAsync(request, cancellationToken))
-    .WithName("CreateOrder")
-    .Produces(StatusCodes.Status202Accepted)
-    .ProducesValidationProblem()
-    .Produces(StatusCodes.Status400BadRequest);
-
-app.MapGet("/healthz", () => Results.Ok());
+app.MapControllers();
+app.MapHealthChecks("/healthz");
 
 app.MapGet("/", () => Results.Redirect("/swagger"))
     .ExcludeFromDescription();

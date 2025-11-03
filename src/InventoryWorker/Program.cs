@@ -1,11 +1,10 @@
 using Contracts.Messages;
+using InventoryWorker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Rebus.Bus;
 using Rebus.Config;
-using Rebus.Handlers;
 using Serilog;
 
 using var host = Host.CreateDefaultBuilder(args)
@@ -27,7 +26,10 @@ using var host = Host.CreateDefaultBuilder(args)
         services.AddRebus((configure, provider) =>
             configure
                 .Logging(l => l.Serilog())
-                .Transport(t => t.UseRabbitMq(provider.GetRequiredService<IConfiguration>()["Rabbit:ConnectionString"]!, "inventory-worker"))
+                .Transport(t => t.UseRabbitMq(
+                    provider.GetRequiredService<IConfiguration>()["Rabbit:ConnectionString"]!, 
+                    "inventory-worker")
+                )
                 .Options(o =>
                 {
                     o.SetNumberOfWorkers(1);
@@ -49,23 +51,4 @@ try
 finally
 {
     Log.CloseAndFlush();
-}
-
-internal sealed class OrderCreatedHandler(ILogger<OrderCreatedHandler> logger, Random random)
-    : IHandleMessages<OrderCreated>
-{
-    public async Task Handle(OrderCreated message)
-    {
-        logger.LogInformation("Received order {OrderId} with {ItemCount} item(s)", message.OrderId, message.Items.Count);
-
-        foreach (var item in message.Items)
-        {
-            logger.LogInformation(" -> SKU {Sku}, qty {Qty}", item.Sku, item.Qty);
-        }
-
-        var delay = random.Next(100, 301);
-        await Task.Delay(delay);
-
-        logger.LogInformation("Order {OrderId} processed in {Delay} ms", message.OrderId, delay);
-    }
 }

@@ -38,4 +38,6 @@ curl -X POST http://localhost:8080/order \
 - Убедитесь, что `Rabbit__ConnectionString` корректно прокинут в контейнеры (`docker compose config`).
 - Проверьте доступность RabbitMQ по `docker compose logs rabbitmq` и в UI `http://localhost:15672`.
 - Очереди `orders-api` и `inventory-worker` должны появиться после первого запуска сервисов.
+
+Локальная разработка
 - Для локальной проверки без Docker достаточно запустить `dotnet run --project src/OrderService` и `dotnet run --project src/InventoryWorker`, предварительно подняв RabbitMQ.

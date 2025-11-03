@@ -5,15 +5,14 @@
       "Default": "Information",
       "Override": {
         "Microsoft": "Warning",
-        "System": "Warning",
-        "Rebus": "Information"
+        "System": "Warning"
       }
     },
     "WriteTo": [
       {
         "Name": "Console",
         "Args": {
-          "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}"
+          "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"
         }
       }
     ],

@@ -1,0 +1,14 @@
+﻿{
+  "profiles": {
+    "OrderService": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:8080/swagger/index.html",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:8080"
+      }
+    }
+  }
+}

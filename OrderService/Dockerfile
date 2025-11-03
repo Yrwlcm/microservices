@@ -2,13 +2,13 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY OrderSample.sln ./
-COPY src/Contracts/Contracts.csproj src/Contracts/
-COPY src/OrderService/OrderService.csproj src/OrderService/
-COPY src/InventoryWorker/InventoryWorker.csproj src/InventoryWorker/
+COPY Contracts/Contracts.csproj src/Contracts/
+COPY OrderService/OrderService.csproj src/OrderService/
+COPY InventoryWorker/InventoryWorker.csproj src/InventoryWorker/
 
 RUN dotnet restore src/OrderService/OrderService.csproj
 
-COPY src/ ./src/
+COPY . ./src/
 
 RUN dotnet publish src/OrderService/OrderService.csproj -c Release -o /app/publish /p:UseAppHost=false
 

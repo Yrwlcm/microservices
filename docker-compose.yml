@@ -16,7 +16,7 @@ services:
   orders-api:
     build:
       context: .
-      dockerfile: src/OrderService/Dockerfile
+      dockerfile: OrderService/Dockerfile
     environment:
       ASPNETCORE_URLS: http://+:8080
       Rabbit__ConnectionString: amqp://guest:guest@rabbitmq:5672/
@@ -31,7 +31,7 @@ services:
   inventory-worker:
     build:
       context: .
-      dockerfile: src/InventoryWorker/Dockerfile
+      dockerfile: InventoryWorker/Dockerfile
     environment:
       Rabbit__ConnectionString: amqp://guest:guest@rabbitmq:5672/
     depends_on:

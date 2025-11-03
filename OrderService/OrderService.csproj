@@ -4,6 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishTrimmed>false</PublishTrimmed>
+    <UserSecretsId>c4b0ad1e-01ad-4df2-8890-636bfdbfe87f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

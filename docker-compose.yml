@@ -1,0 +1,45 @@
+name: order-sample
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  orders-api:
+    build:
+      context: .
+      dockerfile: src/OrderService/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      Rabbit__ConnectionString: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  inventory-worker:
+    build:
+      context: .
+      dockerfile: src/InventoryWorker/Dockerfile
+    environment:
+      Rabbit__ConnectionString: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

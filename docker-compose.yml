@@ -27,6 +27,21 @@ services:
       - "8080:8080"
     networks:
       - app-network
+  
+  inventory-api:
+    build:
+      context: .
+      dockerfile: InventoryService/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      Rabbit__ConnectionString: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - rabbitmq:
+          condition: service_healthy
+    ports:
+      - "8089:8080"
+    networks:
+      - app-network
 
   inventory-worker:
     build:

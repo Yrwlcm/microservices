@@ -10,10 +10,10 @@ using Serilog;
 namespace InventoryService.Tests.Handlers;
 
 [TestFixture]
-public class ReleaseOrAddGoodsQuantityHandlerTests
+public class AddGoodsQuantityHandlerTests
 {
     private InventoryDbContext _context;
-        private ReleaseOrAddGoodsQuantityHandler _handler;
+        private AddGoodsQuantityHandler _handler;
         private ILogger _logger;
 
         [SetUp]
@@ -26,12 +26,12 @@ public class ReleaseOrAddGoodsQuantityHandlerTests
             _context = new InventoryDbContext(options);
             _logger = Substitute.For<ILogger>();
 
-            var apple = Good.Create(new CreateGoodDto("A1", "Apple", 5)).Value;
-            var banana = Good.Create(new CreateGoodDto("B2", "Banana", 10)).Value;
+            var apple = Good.Create(new CreateGoodDto("A1", "Apple", 3, 5)).Value;
+            var banana = Good.Create(new CreateGoodDto("B2", "Banana", 5, 10)).Value;
             _context.Goods.AddRange(apple, banana);
             await _context.SaveChangesAsync();
 
-            _handler = new ReleaseOrAddGoodsQuantityHandler(_context, _logger);
+            _handler = new AddGoodsQuantityHandler(_context, _logger);
         }
 
         [TearDown]
@@ -44,7 +44,7 @@ public class ReleaseOrAddGoodsQuantityHandlerTests
         [Test]
         public async Task ExecuteAsync_ShouldIncreaseAvailable_WhenNormalAdd()
         {
-            var command = new ReleaseOrAddGoodsQuantityCommand(
+            var command = new AddGoodsQuantityCommand(
                 new List<GoodQuantityDto> { new("A1", 3) });
 
             var result = await _handler.ExecuteAsync(command, CancellationToken.None);
@@ -52,31 +52,12 @@ public class ReleaseOrAddGoodsQuantityHandlerTests
             result.IsSuccess.Should().BeTrue();
             var good = await _context.Goods.FirstAsync(g => g.Sku == "A1");
             good.AvailableQuantity.Should().Be(8);
-            good.ReservedQuantity.Should().Be(0);
         }
-
-        [Test]
-        public async Task ExecuteAsync_ShouldMoveFromReserved_WhenFromReservedTrue()
-        {
-            var good = await _context.Goods.FirstAsync(g => g.Sku == "B2");
-            good.ReserveGoods(4);
-            await _context.SaveChangesAsync();
-
-            var command = new ReleaseOrAddGoodsQuantityCommand(
-                new List<GoodQuantityDto> { new("B2", 2) },
-                FromReserved: true);
-
-            var result = await _handler.ExecuteAsync(command, CancellationToken.None);
-
-            result.IsSuccess.Should().BeTrue();
-            good.AvailableQuantity.Should().Be(8);
-            good.ReservedQuantity.Should().Be(2);
-        }
-
+        
         [Test]
         public async Task ExecuteAsync_ShouldLogWarning_WhenGoodNotFound()
         {
-            var command = new ReleaseOrAddGoodsQuantityCommand(
+            var command = new AddGoodsQuantityCommand(
                 new List<GoodQuantityDto> { new("Z9", 5) });
 
             var result = await _handler.ExecuteAsync(command, CancellationToken.None);
@@ -88,7 +69,7 @@ public class ReleaseOrAddGoodsQuantityHandlerTests
         [Test]
         public async Task ExecuteAsync_ShouldLogWarning_WhenAddFails()
         {
-            var command = new ReleaseOrAddGoodsQuantityCommand(
+            var command = new AddGoodsQuantityCommand(
                 new List<GoodQuantityDto> { new("A1", -5) });
 
             var result = await _handler.ExecuteAsync(command, CancellationToken.None);

@@ -6,8 +6,8 @@ namespace InventoryService.Tests.Models;
 
 public class GoodTests
 {
-    private static CreateGoodDto Dto(string sku = "ABC123", string name = "Тестовый товар", int quantity = 10)
-        => new(sku, name, quantity);
+    private static CreateGoodDto Dto(string sku = "ABC123", string name = "Тестовый товар", int itemPrice=3, int quantity = 10)
+        => new(sku, name, itemPrice, quantity);
 
     [Test]
     public void Create_ShouldReturnSuccess_WhenDtoIsValid()
@@ -18,7 +18,6 @@ public class GoodTests
         result.Value.Sku.Should().Be("ABC123");
         result.Value.Name.Should().Be("Тестовый товар");
         result.Value.AvailableQuantity.Should().Be(10);
-        result.Value.ReservedQuantity.Should().Be(0);
     }
 
     [Test]
@@ -40,6 +39,13 @@ public class GoodTests
     }
 
     [Test]
+    public void Create_ShouldFail_WhenItemPriceIsInvalid()
+    {
+        var result = Good.Create(Dto(itemPrice: -1));
+        result.IsFailure.Should().BeTrue();
+    }
+
+    [Test]
     public void Create_ShouldFail_WhenQuantityIsNegative()
     {
         var result = Good.Create(Dto(quantity: -5));
@@ -49,7 +55,7 @@ public class GoodTests
     }
 
     [Test]
-    public void ReserveGoods_ShouldDecreaseAvailable_AndIncreaseReserved_WhenEnoughQuantity()
+    public void ReserveGoods_ShouldDecreaseAvailable_WhenEnoughQuantity()
     {
         var good = Good.Create(Dto()).Value;
 
@@ -57,7 +63,6 @@ public class GoodTests
 
         result.IsSuccess.Should().BeTrue();
         good.AvailableQuantity.Should().Be(5);
-        good.ReservedQuantity.Should().Be(5);
     }
 
     [Test]
@@ -70,7 +75,6 @@ public class GoodTests
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("Недостаточно товара");
         good.AvailableQuantity.Should().Be(5);
-        good.ReservedQuantity.Should().Be(0);
     }
 
     [Test]
@@ -83,40 +87,25 @@ public class GoodTests
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("Недопустимое количество");
         good.AvailableQuantity.Should().Be(10);
-        good.ReservedQuantity.Should().Be(0);
     }
 
     [Test]
-    public void ReleaseOrAddGoods_ShouldIncreaseAvailable_WhenAddingNewStock()
+    public void AddGoods_ShouldIncreaseAvailable_WhenAddingNewStock()
     {
         var good = Good.Create(Dto()).Value;
 
-        var result = good.ReleaseOrAddGoods(5);
+        var result = good.AddGoods(5);
 
         result.IsSuccess.Should().BeTrue();
         good.AvailableQuantity.Should().Be(15);
-        good.ReservedQuantity.Should().Be(0);
     }
-
+    
     [Test]
-    public void ReleaseOrAddGoods_ShouldMoveFromReserved_WhenFromReservedTrue()
-    {
-        var good = Good.Create(Dto()).Value;
-        good.ReserveGoods(4);
-
-        var result = good.ReleaseOrAddGoods(4, fromReserved: true);
-
-        result.IsSuccess.Should().BeTrue();
-        good.AvailableQuantity.Should().Be(10);
-        good.ReservedQuantity.Should().Be(0);
-    }
-
-    [Test]
-    public void ReleaseOrAddGoods_ShouldFail_WhenQuantityNegative()
+    public void AddGoods_ShouldFail_WhenQuantityNegative()
     {
         var good = Good.Create(Dto()).Value;
 
-        var result = good.ReleaseOrAddGoods(-2);
+        var result = good.AddGoods(-2);
 
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("Недопустимое количество");
@@ -127,10 +116,9 @@ public class GoodTests
     {
         var good = Good.Create(Dto(quantity: 0)).Value;
 
-        var result = good.ReleaseOrAddGoods(10);
+        var result = good.AddGoods(10);
 
         result.IsSuccess.Should().BeTrue();
         good.AvailableQuantity.Should().Be(10);
-        good.ReservedQuantity.Should().Be(0);
     }
 }

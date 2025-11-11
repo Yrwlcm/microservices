@@ -23,10 +23,10 @@ public class GetGoodsHandlerTests
 
             var goodsToAdd = new[]
             {
-                new CreateGoodDto("A1", "Apple", 5),
-                new CreateGoodDto("B2", "Banana", 8),
-                new CreateGoodDto("C3", "Cherry", 12),
-                new CreateGoodDto("D4", "Dates", 2)
+                new CreateGoodDto("A1", "Apple", 3, 5),
+                new CreateGoodDto("B2", "Banana", 5, 8),
+                new CreateGoodDto("C3", "Cherry", 8, 12),
+                new CreateGoodDto("D4", "Dates", 13, 2)
             };
 
             foreach (var dto in goodsToAdd)

@@ -7,9 +7,9 @@ using ILogger = Serilog.ILogger;
 
 namespace InventoryService.Application.Handlers;
 
-public class ReleaseOrAddGoodsQuantityHandler(InventoryDbContext inventoryDbContext, ILogger logger) : IAsyncCommandHandler<ReleaseOrAddGoodsQuantityCommand, Result>
+public class AddGoodsQuantityHandler(InventoryDbContext inventoryDbContext, ILogger logger) : IAsyncCommandHandler<AddGoodsQuantityCommand, Result>
 {
-    public async Task<Result> ExecuteAsync(ReleaseOrAddGoodsQuantityCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result> ExecuteAsync(AddGoodsQuantityCommand command, CancellationToken cancellationToken = default)
     {
         Dictionary<string, int> skuQuantityDictionary = new();
         foreach (var dto in command.GoodsQuantities)
@@ -20,7 +20,7 @@ public class ReleaseOrAddGoodsQuantityHandler(InventoryDbContext inventoryDbCont
             .ToListAsync(cancellationToken);
         foreach (var g in existingGoods)
         {
-            var addQuantityRes = g.ReleaseOrAddGoods(skuQuantityDictionary[g.Sku], command.FromReserved);
+            var addQuantityRes = g.AddGoods(skuQuantityDictionary[g.Sku]);
             if (addQuantityRes.IsFailure)
                 logger.Warning("Не удалось увеличить количество товара {@sku}: {@reason}", g.Sku,  addQuantityRes.Error);
             skuHashSet.Remove(g.Sku);
@@ -34,10 +34,10 @@ public class ReleaseOrAddGoodsQuantityHandler(InventoryDbContext inventoryDbCont
         }
         catch (DbUpdateConcurrencyException)
         {
-            logger.Error("Произошла ошибка при сохранении изменений в обработчике {@handlerName}", nameof(ReleaseOrAddGoodsQuantityHandler));
+            logger.Error("Произошла ошибка при сохранении изменений в обработчике {@handlerName}", nameof(AddGoodsQuantityHandler));
             return Result.Failure("Ошибка сохранения данных");
         }
     }
 }
 
-public record ReleaseOrAddGoodsQuantityCommand(List<GoodQuantityDto> GoodsQuantities, bool FromReserved = false) : ICommand<Result>;
+public record AddGoodsQuantityCommand(List<GoodQuantityDto> GoodsQuantities) : ICommand<Result>;

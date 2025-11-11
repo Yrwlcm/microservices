@@ -39,8 +39,8 @@ public class CreateGoodsHandlerTests
     {
         var dtos = new List<CreateGoodDto>
         {
-            new("A1", "Apple", 5),
-            new("B2", "Banana", 10)
+            new("A1", "Apple", 3, 5),
+            new("B2", "Banana", 5, 10)
         };
         var command = new CreateGoodCommand(dtos);
 
@@ -54,14 +54,14 @@ public class CreateGoodsHandlerTests
     [Test]
     public async Task ExecuteAsync_ShouldSkipExistingGoods()
     {
-        var existing = Good.Create(new CreateGoodDto("A1", "AlreadyExist", 10)).Value;
+        var existing = Good.Create(new CreateGoodDto("A1", "AlreadyExist", 5, 10)).Value;
         await _context.Goods.AddAsync(existing);
         await _context.SaveChangesAsync();
 
         var dtos = new List<CreateGoodDto>
         {
-            new("A1", "Apple", 5),
-            new("B2", "Banana", 10)
+            new("A1", "Apple", 3, 5),
+            new("B2", "Banana", 8, 10)
         };
         var command = new CreateGoodCommand(dtos);
 
@@ -78,9 +78,9 @@ public class CreateGoodsHandlerTests
     {
         var dtos = new List<CreateGoodDto>
         {
-            new("", "NoSku", 5),         
-            new("C3", "", 10),            
-            new("D4", "Negative", -5)     
+            new("", "NoSku", 3 ,5),         
+            new("C3", "", -9, 10),            
+            new("D4", "Negative", 8, -5)     
         };
         var command = new CreateGoodCommand(dtos);
 
@@ -95,8 +95,8 @@ public class CreateGoodsHandlerTests
     {
         var dtos = new List<CreateGoodDto>
         {
-            new("abc", "Apple", 3),
-            new("ABC", "AppleDuplicate", 5)
+            new("abc", "Apple", 8, 3),
+            new("ABC", "AppleDuplicate", 12, 5)
         };
         var command = new CreateGoodCommand(dtos);
 

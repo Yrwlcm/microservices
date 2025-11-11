@@ -1,12 +1,25 @@
+using System.Reflection;
 using InventoryService;
 using InventoryService.Extensions;
+using Microsoft.OpenApi.Models;
 using Rebus.Config;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", new OpenApiInfo()
+    {
+        Title = "Inventory Service API",
+        Version = "v1"
+    });
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    o.IncludeXmlComments(xmlPath);
+});
 builder.Services.AddInventoryDbContext(builder.Configuration);
 builder.Host.UseSerilog((context, configuration) =>
 {
@@ -16,13 +29,14 @@ builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddRequestum();
 var app = builder.Build();
-
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory Service API v1");
+    options.RoutePrefix = "swagger";
+});
 app.UseSerilogRequestLogging();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+MigrationsRunner.ApplyMigrations(app.Services);
+app.MapControllers();
 app.Run();

@@ -13,7 +13,7 @@ public class GetGoodsHandler(InventoryDbContext inventoryDbContext) : IAsyncQuer
         var goods = await inventoryDbContext.Goods
             .RetrievePage(query.GoodsFilter.Page, query.GoodsFilter.Limit)
             .ToListAsync(cancellationToken);
-        return goods.Select(g => new GetGoodDto(g.Sku, g.Name, g.AvailableQuantity)).ToList();
+        return goods.Select(g => new GetGoodDto(g.Sku, g.Name, g.AvailableQuantity, g.ItemPrice)).ToList();
     }
 }
 

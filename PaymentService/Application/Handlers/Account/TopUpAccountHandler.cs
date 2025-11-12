@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using PaymentService.Infrastructure;
+using PaymentService.Models;
 using Requestum.Contract;
 using ILogger = Serilog.ILogger;
 
@@ -10,7 +11,8 @@ public class TopUpAccountHandler(PaymentDbContext paymentDbContext, ILogger logg
 {
     public async Task<Result> ExecuteAsync(TopUpAccountCommand command, CancellationToken cancellationToken = default)
     {
-        var account = await paymentDbContext.Accounts.FirstOrDefaultAsync(a => a.Id.Value == command.AccountId, cancellationToken);
+        var accountId = new AccountId(command.AccountId);
+        var account = await paymentDbContext.Accounts.FirstOrDefaultAsync(a => a.Id == accountId, cancellationToken);
         if (account == null)
         {
             logger.Error("Невозможно пополнить счет {@accountId}: счет отсутствует", command.AccountId);

@@ -12,7 +12,8 @@ public class CreateAccountHandler(PaymentDbContext paymentDbContext, ILogger log
 {
     public async Task<Result<Guid>> ExecuteAsync(CreateAccountCommand command, CancellationToken cancellationToken = default)
     {
-        var existingAccount = await paymentDbContext.Accounts.FirstOrDefaultAsync(a => a.Id.Value ==  command.AccountId, cancellationToken);
+        var accountId = new AccountId(command.AccountId);
+        var existingAccount = await paymentDbContext.Accounts.FirstOrDefaultAsync(a => a.Id == accountId, cancellationToken);
         if (existingAccount != null)
         {
             logger.Error("Счет {@accountId} уже создан",  command.AccountId);

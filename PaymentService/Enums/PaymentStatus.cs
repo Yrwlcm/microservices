@@ -5,5 +5,5 @@ public enum PaymentStatus
     Success = 0,
     MissingAccountFailure = 1,
     LowBalanceFailure = 2,
-    UnexpectedFailure = 3
+    BalanceError = 3
 }

@@ -8,7 +8,7 @@ public class Good
     public string Sku { get; private set; }
     public string Name { get; private set; }
     public int AvailableQuantity { get; private set; }
-    public int ItemPrice { get; private set; }
+    public decimal ItemPrice { get; private set; }
     public byte[]? RowVersion { get; private set; }
 
     private Good()
@@ -36,10 +36,10 @@ public class Good
         return Result.Success(item);
     }
 
-    public Result<int> ReserveGoods(int quantity)
+    public Result<decimal> ReserveGoods(int quantity)
     {
-        if (quantity < 0) return Result.Failure<int>("Недопустимое количество товара");
-        if (AvailableQuantity < quantity) return Result.Failure<int>($"Недостаточно товара {Name} для резервирования");
+        if (quantity < 0) return Result.Failure<decimal>("Недопустимое количество товара");
+        if (AvailableQuantity < quantity) return Result.Failure<decimal>($"Недостаточно товара {Name} для резервирования");
         AvailableQuantity -= quantity;
         return Result.Success(quantity * ItemPrice);
     }

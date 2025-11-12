@@ -7,9 +7,9 @@ using Requestum.Contract;
 
 namespace InventoryService.Application.Handlers;
 
-public class ReserveGoodsHandler(InventoryDbContext inventoryDbContext) : IAsyncCommandHandler<ReserveGoodsCommand, Result<int>>
+public class ReserveGoodsHandler(InventoryDbContext inventoryDbContext) : IAsyncCommandHandler<ReserveGoodsCommand, Result<decimal>>
 {
-    public async Task<Result<int>> ExecuteAsync(ReserveGoodsCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<decimal>> ExecuteAsync(ReserveGoodsCommand command, CancellationToken cancellationToken = default)
     {
         Dictionary<string, int> skuQuantityDictionary = new();
         foreach (var dto in command.GoodsQuantities)
@@ -19,11 +19,11 @@ public class ReserveGoodsHandler(InventoryDbContext inventoryDbContext) : IAsync
             .Where(g => skuHashset.Contains(g.Sku))
             .ToListAsync(cancellationToken);
         if (goods.Count != skuHashset.Count) return OutOfStockItemsFailure(skuHashset, goods);
-        var orderTotalPrice = 0;
+        decimal orderTotalPrice = 0;
         foreach (var good in goods)
         {
             var reserveGoodsRes = good.ReserveGoods(skuQuantityDictionary[good.Sku]);
-            if (reserveGoodsRes.IsFailure) return Result.Failure<int>($"{reserveGoodsRes.Error} ({good.Sku})");
+            if (reserveGoodsRes.IsFailure) return Result.Failure<decimal>($"{reserveGoodsRes.Error} ({good.Sku})");
             orderTotalPrice += reserveGoodsRes.Value;
         }
         try
@@ -33,17 +33,17 @@ public class ReserveGoodsHandler(InventoryDbContext inventoryDbContext) : IAsync
         }
         catch (DbUpdateConcurrencyException)
         {
-            return Result.Failure<int>("Произошла ошибка при сохранении информации о зарезервированных товарах");
+            return Result.Failure<decimal>("Произошла ошибка при сохранении информации о зарезервированных товарах");
         }
     }
 
-    private static Result<int> OutOfStockItemsFailure(HashSet<string> requestedGoods, List<Good> foundGoods)
+    private static Result<decimal> OutOfStockItemsFailure(HashSet<string> requestedGoods, List<Good> foundGoods)
     {
         var foundGoodsHashset = foundGoods.Select(g => g.Sku).ToHashSet();
         var outOfStockItems = requestedGoods.Except(foundGoodsHashset).ToList();
         var outOfStockItemsString =  string.Join(", ", outOfStockItems);
-        return Result.Failure<int>($"Товары {outOfStockItemsString} отсутствуют в учёте");
+        return Result.Failure<decimal>($"Товары {outOfStockItemsString} отсутствуют в учёте");
     }
 }
 
-public record ReserveGoodsCommand(List<GoodQuantityDto> GoodsQuantities): ICommand<Result<int>>;
+public record ReserveGoodsCommand(List<GoodQuantityDto> GoodsQuantities): ICommand<Result<decimal>>;

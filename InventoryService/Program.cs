@@ -1,7 +1,9 @@
 using System.Reflection;
 using InventoryService;
 using InventoryService.Extensions;
+using InventoryService.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Outbox.Services;
 using Rebus.Config;
 using Serilog;
 
@@ -28,6 +30,7 @@ builder.Host.UseSerilog((context, configuration) =>
 builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddRequestum();
+builder.Services.AddHostedService<OutboxProcessor<InventoryDbContext>>();
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(options =>

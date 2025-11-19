@@ -1,7 +1,9 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Outbox.Services;
 using PaymentService;
 using PaymentService.Extensions;
+using PaymentService.Infrastructure;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,7 @@ builder.Services.AddRequestum(setup =>
     setup.RequireEventHandlers = true;
 });
 builder.Services.AddRebus(builder.Configuration);
+builder.Services.AddHostedService<OutboxProcessor<PaymentDbContext>>();
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(setup => 

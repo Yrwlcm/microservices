@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Tests", "Pay
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox", "Outbox\Outbox.csproj", "{BD926F19-5604-404C-9784-49517AAA53A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox.Tests", "Outbox.Tests\Outbox.Tests.csproj", "{50341CE6-C24B-415D-B4DA-BDDDC405256F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{BD926F19-5604-404C-9784-49517AAA53A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD926F19-5604-404C-9784-49517AAA53A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD926F19-5604-404C-9784-49517AAA53A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

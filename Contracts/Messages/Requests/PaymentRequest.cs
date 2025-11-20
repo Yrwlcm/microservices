@@ -1,6 +1,3 @@
 namespace Contracts.Messages.Requests;
 
-public class PaymentRequest
-{
-    
-}
+public record PaymentRequest(Guid OrderId, decimal OrderPrice) : IRequest;

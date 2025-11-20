@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Contracts;
 using Contracts.Messages;
+using Contracts.Messages.Events;
 
 [assembly: InternalsVisibleTo("Outbox.Tests")]
 
@@ -14,7 +15,7 @@ internal static class MessageTypeRegistry
     {
         var contractsAssembly = typeof(OrderCreated).Assembly;
         Contracts = contractsAssembly.GetTypes()
-            .Where(t => typeof(IEvent).IsAssignableFrom(t) && t is { IsInterface: false, IsAbstract: false })
+            .Where(t => (typeof(IEvent).IsAssignableFrom(t) || typeof(IRequest).IsAssignableFrom(t)) && t is { IsInterface: false, IsAbstract: false })
             .ToDictionary(t => t.Name, t => t,  StringComparer.OrdinalIgnoreCase);
     }
 

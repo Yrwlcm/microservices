@@ -34,11 +34,12 @@ public class CreatePaymentHandlerTests
     public async Task ExecuteAsync_ShouldCreatePaymentWithMissingAccount_WhenAccountNotFound()
     {
         var handler = new CreatePaymentHandler(_context, _logger);
-        var cmd = new CreatePaymentCommand(Guid.NewGuid(), Guid.NewGuid(), 500);
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        var cmd = new CreatePaymentCommand(transaction, Guid.NewGuid(), Guid.NewGuid(), 500);
 
         var result = await handler.ExecuteAsync(cmd);
-
-        result.IsFailure.Should().BeTrue();
+        await transaction.CommitAsync();
+        result.Result.IsFailure.Should().BeTrue();
         var payment = await _context.Payments.SingleAsync();
         payment.PaymentStatus.Should().Be(PaymentStatus.MissingAccountFailure);
         payment.OrderPrice.Should().Be(500);
@@ -50,13 +51,13 @@ public class CreatePaymentHandlerTests
         var acc = Models.Account.Create(new CreateAccountDto(Guid.NewGuid()));
         await _context.Accounts.AddAsync(acc);
         await _context.SaveChangesAsync();
-
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         var handler = new CreatePaymentHandler(_context, _logger);
-        var cmd = new CreatePaymentCommand(acc.Id.Value, Guid.NewGuid(), 500);
+        var cmd = new CreatePaymentCommand(transaction, acc.Id.Value, Guid.NewGuid(), 500);
 
         var result = await handler.ExecuteAsync(cmd);
-
-        result.IsFailure.Should().BeTrue();
+        await transaction.CommitAsync();
+        result.Result.IsFailure.Should().BeTrue();
         (await _context.Payments.CountAsync()).Should().Be(1);
         var payment = await _context.Payments.FirstAsync();
         payment.PaymentStatus.Should().Be(PaymentStatus.LowBalanceFailure);
@@ -65,18 +66,19 @@ public class CreatePaymentHandlerTests
     [Test]
     public async Task ExecuteAsync_ShouldWithdrawAndRecordSuccess_WhenEnoughBalance()
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync();
         var acc = Models.Account.Create(new CreateAccountDto(Guid.NewGuid()));
         acc.AddMoney(1000);
         await _context.Accounts.AddAsync(acc);
         await _context.SaveChangesAsync();
 
         var handler = new CreatePaymentHandler(_context, _logger);
-        var cmd = new CreatePaymentCommand(acc.Id.Value, Guid.NewGuid(), 400);
+        var cmd = new CreatePaymentCommand(transaction, acc.Id.Value, Guid.NewGuid(), 400);
 
         var result = await handler.ExecuteAsync(cmd);
-
-        result.IsSuccess.Should().BeTrue();
-
+        
+        result.Result.IsSuccess.Should().BeTrue();
+        await transaction.CommitAsync();
         var updatedAcc = await _context.Accounts.FirstAsync();
         updatedAcc.Balance.Should().Be(600);
         var payment = await _context.Payments.SingleAsync();

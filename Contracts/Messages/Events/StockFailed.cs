@@ -1,3 +1,3 @@
-namespace Contracts.Messages;
+namespace Contracts.Messages.Events;
 
-public record StockFailed(Guid OrderId, IReadOnlyList<OrderItem> Items) : IEvent;
+public record StockFailed(Guid OrderId) : IEvent;

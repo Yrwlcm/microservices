@@ -1,4 +1,5 @@
 using Contracts.Messages;
+using Contracts.Messages.Events;
 using InventoryWorker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

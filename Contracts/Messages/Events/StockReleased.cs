@@ -1,6 +1,3 @@
 namespace Contracts.Messages.Events;
 
-public class StockReleased
-{
-    
-}
+public record StockReleased(Guid OrderId) : IEvent;

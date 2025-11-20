@@ -26,15 +26,7 @@ public class ReserveGoodsHandler(InventoryDbContext inventoryDbContext) : IAsync
             if (reserveGoodsRes.IsFailure) return Result.Failure<decimal>($"{reserveGoodsRes.Error} ({good.Sku})");
             orderTotalPrice += reserveGoodsRes.Value;
         }
-        try
-        {
-            await inventoryDbContext.SaveChangesAsync(cancellationToken);
-            return Result.Success(orderTotalPrice);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return Result.Failure<decimal>("Произошла ошибка при сохранении информации о зарезервированных товарах");
-        }
+        return Result.Success(orderTotalPrice);
     }
 
     private static Result<decimal> OutOfStockItemsFailure(HashSet<string> requestedGoods, List<Good> foundGoods)

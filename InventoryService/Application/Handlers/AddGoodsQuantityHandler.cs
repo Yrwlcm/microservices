@@ -18,18 +18,23 @@ public class AddGoodsQuantityHandler(InventoryDbContext inventoryDbContext, ILog
         var existingGoods = await inventoryDbContext.Goods
             .Where(g => skuHashSet.Contains(g.Sku))
             .ToListAsync(cancellationToken);
+        if (existingGoods.Count != skuHashSet.Count && command.StrictMode)
+            return Result.Failure("Ошибка операции добавления товаров: не все позиции существуют на складе");
         foreach (var g in existingGoods)
         {
             var addQuantityRes = g.AddGoods(skuQuantityDictionary[g.Sku]);
-            if (addQuantityRes.IsFailure)
+            if (addQuantityRes.IsFailure && !command.StrictMode)
                 logger.Warning("Не удалось увеличить количество товара {@sku}: {@reason}", g.Sku,  addQuantityRes.Error);
+            if (addQuantityRes.IsFailure && command.StrictMode)
+                return Result.Failure($"Ошибка операции добавления товаров: не удалось увеличить количество позиции {g.Sku}");
             skuHashSet.Remove(g.Sku);
         }
         foreach (var sku in skuHashSet)
             logger.Warning("Товар {@sku} не был обнаружен для добавления количества", sku);
         try
         {
-            await inventoryDbContext.SaveChangesAsync(cancellationToken);
+            if (!command.StrictMode)
+                await inventoryDbContext.SaveChangesAsync(cancellationToken);
             return Result.Success();
         }
         catch (DbUpdateConcurrencyException)
@@ -40,4 +45,4 @@ public class AddGoodsQuantityHandler(InventoryDbContext inventoryDbContext, ILog
     }
 }
 
-public record AddGoodsQuantityCommand(List<GoodQuantityDto> GoodsQuantities) : ICommand<Result>;
+public record AddGoodsQuantityCommand(List<GoodQuantityDto> GoodsQuantities, bool StrictMode = false) : ICommand<Result>;

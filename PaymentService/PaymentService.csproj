@@ -31,4 +31,8 @@
       <ProjectReference Include="..\Outbox\Outbox.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Infrastructure\Consumers\" />
+    </ItemGroup>
+
 </Project>

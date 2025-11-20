@@ -41,5 +41,6 @@ app.UseSwaggerUI(options =>
 app.UseSerilogRequestLogging();
 
 MigrationsRunner.ApplyMigrations(app.Services);
+await BusSubscriber.SubscribeToMessagesAsync(app.Services);
 app.MapControllers();
 app.Run();

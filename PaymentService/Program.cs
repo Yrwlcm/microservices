@@ -42,4 +42,5 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.MapControllers();
 MigrationsRunner.ApplyMigrations(app.Services);
+await BusSubscriber.SubscribeToMessagesAsync(app.Services);
 app.Run();

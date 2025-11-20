@@ -1,3 +1,4 @@
-namespace Contracts.Messages;
 
-public record StockReserved(Guid OrderId, IReadOnlyList<OrderItem> ReservedItems, decimal OrderPrice) : IEvent;
+namespace Contracts.Messages.Events;
+
+public record StockReserved(Guid OrderId, decimal OrderPrice) : IEvent;

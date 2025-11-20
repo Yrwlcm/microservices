@@ -1,3 +1,3 @@
-namespace Contracts.Messages;
+namespace Contracts.Messages.Events;
 
-public record PaymentFailed(Guid OrderId, IReadOnlyList<OrderItem> Items) : IEvent;
+public record PaymentFailed(Guid OrderId) : IEvent;

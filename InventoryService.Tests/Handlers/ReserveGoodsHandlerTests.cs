@@ -51,10 +51,10 @@ public class ReserveGoodsHandlerTests
             });
 
             var result = await _handler.ExecuteAsync(command, CancellationToken.None);
-
+            
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().Be(1500);
-
+            await _context.SaveChangesAsync();
             var apple = await _context.Goods.FirstAsync(g => g.Sku == "A1");
             apple.AvailableQuantity.Should().Be(2);
             var banana = await _context.Goods.FirstAsync(g => g.Sku == "B2");

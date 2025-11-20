@@ -1,4 +1,4 @@
-namespace Contracts.Messages;
+namespace Contracts.Messages.Events;
 
 public record OrderCreated(Guid OrderId, IReadOnlyList<OrderItem> Items) : IEvent;
 

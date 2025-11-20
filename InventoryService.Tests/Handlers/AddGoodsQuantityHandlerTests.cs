@@ -80,4 +80,32 @@ public class AddGoodsQuantityHandlerTests
             good.AvailableQuantity.Should().Be(5);
         }
     
+    
+        [Test]
+        public async Task ExecuteAsync_ShouldReturnFailure_WhenGoodNotFound_Strict()
+        {
+            var command = new AddGoodsQuantityCommand(
+                new List<GoodQuantityDto> { new("Z9", 5) },
+                StrictMode: true);
+
+            var result = await _handler.ExecuteAsync(command, CancellationToken.None);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("не все позиции существуют");
+            _logger.DidNotReceive().Warning(Arg.Any<string>(), Arg.Any<object[]>());
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldReturnFailure_WhenAddFails_Strict()
+        {
+            var command = new AddGoodsQuantityCommand(
+                new List<GoodQuantityDto> { new("A1", -5) },
+                StrictMode: true);
+
+            var result = await _handler.ExecuteAsync(command, CancellationToken.None);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Should().Contain("не удалось увеличить количество");
+            _logger.DidNotReceive().Warning(Arg.Any<string>(), Arg.Any<object[]>());
+        }
 }

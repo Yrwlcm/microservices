@@ -43,7 +43,7 @@ public class GoodsController(IRequestum mediator) : ControllerBase
     public async Task<IActionResult> AddGoodsQuantities([FromBody] List<GoodQuantityDto> goodQuantityDtos)
     {
         var result = await mediator.ExecuteAsync<AddGoodsQuantityCommand, Result>(
-            new AddGoodsQuantityCommand(goodQuantityDtos));
+            new AddGoodsQuantityCommand(goodQuantityDtos, StrictMode: false));
         if (result.IsFailure) return BadRequest(result.Error);
         return NoContent();
     }

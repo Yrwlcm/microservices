@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Contracts.Messages;
+using Contracts.Messages.Events;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

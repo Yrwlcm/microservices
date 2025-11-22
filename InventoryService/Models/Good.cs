@@ -36,10 +36,10 @@ public class Good
         return Result.Success(item);
     }
 
-    public Result<decimal> ReserveGoods(int quantity)
+    public Result<decimal> TakeGoods(int quantity)
     {
         if (quantity < 0) return Result.Failure<decimal>("Недопустимое количество товара");
-        if (AvailableQuantity < quantity) return Result.Failure<decimal>($"Недостаточно товара {Name} для резервирования");
+        if (AvailableQuantity < quantity) return Result.Failure<decimal>($"Недостаточно товара {Name}");
         AvailableQuantity -= quantity;
         return Result.Success(quantity * ItemPrice);
     }

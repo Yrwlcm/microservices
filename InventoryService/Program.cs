@@ -27,9 +27,9 @@ builder.Host.UseSerilog((context, configuration) =>
 {
     configuration.ReadFrom.Configuration(context.Configuration);
 });
-builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddServices();
 builder.Services.AddRequestum();
+builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddHostedService<OutboxProcessor<InventoryDbContext>>();
 var app = builder.Build();
 app.UseSwagger();

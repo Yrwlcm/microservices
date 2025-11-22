@@ -20,10 +20,17 @@ public class ReserveGoodsHandler(InventoryDbContext inventoryDbContext) : IAsync
             .ToListAsync(cancellationToken);
         if (goods.Count != skuHashset.Count) return OutOfStockItemsFailure(skuHashset, goods);
         decimal orderTotalPrice = 0;
+        var reservedGoodsInfo = new List<(Good good, int quantity)>();
         foreach (var good in goods)
         {
-            var reserveGoodsRes = good.ReserveGoods(skuQuantityDictionary[good.Sku]);
-            if (reserveGoodsRes.IsFailure) return Result.Failure<decimal>($"{reserveGoodsRes.Error} ({good.Sku})");
+            var reserveGoodsRes = good.TakeGoods(skuQuantityDictionary[good.Sku]);
+            if (reserveGoodsRes.IsFailure)
+            {
+                foreach (var reservedGood in reservedGoodsInfo)
+                    reservedGood.good.AddGoods(reservedGood.quantity);
+                return Result.Failure<decimal>($"{reserveGoodsRes.Error} ({good.Sku})");
+            }
+            reservedGoodsInfo.Add((good, skuQuantityDictionary[good.Sku]));
             orderTotalPrice += reserveGoodsRes.Value;
         }
         return Result.Success(orderTotalPrice);

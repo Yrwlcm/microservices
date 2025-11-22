@@ -59,7 +59,7 @@ public class GoodTests
     {
         var good = Good.Create(Dto()).Value;
 
-        var result = good.ReserveGoods(5);
+        var result = good.TakeGoods(5);
 
         result.IsSuccess.Should().BeTrue();
         good.AvailableQuantity.Should().Be(5);
@@ -70,7 +70,7 @@ public class GoodTests
     {
         var good = Good.Create(Dto(quantity: 5)).Value;
 
-        var result = good.ReserveGoods(10);
+        var result = good.TakeGoods(10);
 
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("Недостаточно товара");
@@ -82,7 +82,7 @@ public class GoodTests
     {
         var good = Good.Create(Dto()).Value;
 
-        var result = good.ReserveGoods(-1);
+        var result = good.TakeGoods(-1);
 
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("Недопустимое количество");

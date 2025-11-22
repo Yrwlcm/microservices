@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using InventoryService.Dto;
 using InventoryService.Infrastructure;
+using InventoryService.Models;
 using Microsoft.EntityFrameworkCore;
 using Requestum.Contract;
 using ILogger = Serilog.ILogger;
@@ -20,13 +21,19 @@ public class AddGoodsQuantityHandler(InventoryDbContext inventoryDbContext, ILog
             .ToListAsync(cancellationToken);
         if (existingGoods.Count != skuHashSet.Count && command.StrictMode)
             return Result.Failure("Ошибка операции добавления товаров: не все позиции существуют на складе");
+        var addedGoods = new List<(Good good, int quantity)>();
         foreach (var g in existingGoods)
         {
             var addQuantityRes = g.AddGoods(skuQuantityDictionary[g.Sku]);
             if (addQuantityRes.IsFailure && !command.StrictMode)
                 logger.Warning("Не удалось увеличить количество товара {@sku}: {@reason}", g.Sku,  addQuantityRes.Error);
             if (addQuantityRes.IsFailure && command.StrictMode)
+            {
+                foreach (var addedGood in addedGoods)
+                    addedGood.good.TakeGoods(addedGood.quantity);
                 return Result.Failure($"Ошибка операции добавления товаров: не удалось увеличить количество позиции {g.Sku}");
+            }
+            addedGoods.Add((g, skuQuantityDictionary[g.Sku]));
             skuHashSet.Remove(g.Sku);
         }
         foreach (var sku in skuHashSet)

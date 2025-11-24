@@ -4,7 +4,6 @@ using InventoryService.Extensions;
 using InventoryService.Infrastructure;
 using Microsoft.OpenApi.Models;
 using Outbox.Services;
-using Rebus.Config;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

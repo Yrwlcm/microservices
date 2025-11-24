@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PaymentService.Application;
-using PaymentService.Application.Handlers.Account;
 using PaymentService.Application.Handlers.Payment;
-using PaymentService.Dto.Account;
 using PaymentService.Dto.Payment;
 using Requestum;
 

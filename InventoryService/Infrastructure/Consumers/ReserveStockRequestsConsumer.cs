@@ -6,7 +6,6 @@ using InventoryService.Dto;
 using Outbox.Extensions;
 using Rebus.Handlers;
 using Requestum;
-using ILogger = Serilog.ILogger;
 
 namespace InventoryService.Infrastructure.Consumers;
 

@@ -1,0 +1,39 @@
+﻿{
+  "dashboard": {
+    "title": "Saga Order Processing",
+    "panels": [
+      {
+        "title": "Orders Created vs Completed",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(saga_order_created_total[5m])",
+            "legendFormat": "Created"
+          },
+          {
+            "expr": "rate(saga_order_completed_total[5m])",
+            "legendFormat": "Completed"
+          }
+        ]
+      },
+      {
+        "title": "Order Failure Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "saga_orders_failed / saga_orders_active"
+          }
+        ]
+      },
+      {
+        "title": "Processing Time Percentiles",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(saga_order_processing_time_seconds_bucket[5m]))"
+          }
+        ]
+      }
+    ]
+  }
+}

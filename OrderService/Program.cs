@@ -1,6 +1,7 @@
 using OrderService.Models.Orders;
 using Rebus.Config;
 using Serilog;
+using Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .CreateLogger();
 
-builder.Host.UseSerilog();
+builder.Host.UseSharedSerilog();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddControllers();

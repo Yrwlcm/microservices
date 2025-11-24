@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -21,6 +21,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox", "Outbox\Outbox.csproj", "{BD926F19-5604-404C-9784-49517AAA53A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox.Tests", "Outbox.Tests\Outbox.Tests.csproj", "{50341CE6-C24B-415D-B4DA-BDDDC405256F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

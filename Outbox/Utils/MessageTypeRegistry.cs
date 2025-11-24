@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using Contracts;
-using Contracts.Messages;
 using Contracts.Messages.Events;
 
 [assembly: InternalsVisibleTo("Outbox.Tests")]

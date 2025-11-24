@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Outbox.Enums;
 using Outbox.Extensions;
-using Outbox.Models;
 using Rebus.Bus;
 
 namespace Outbox.Services;

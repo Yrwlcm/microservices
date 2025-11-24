@@ -1,4 +1,3 @@
-using Contracts.Messages;
 using Contracts.Messages.Requests;
 using Rebus.Bus;
 

@@ -1,4 +1,3 @@
-using Contracts.Messages;
 using Contracts.Messages.Events;
 
 namespace OrderService.Models.Orders;

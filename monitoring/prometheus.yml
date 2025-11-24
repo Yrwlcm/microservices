@@ -1,0 +1,34 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'order-service'
+    static_configs:
+      - targets: ['orders-api:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'inventory-service'
+    static_configs:
+      - targets: ['inventory-api:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'payment-service'
+    static_configs:
+      - targets: ['payment-api:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15672']
+    metrics_path: '/metrics'
+    basic_auth:
+      username: 'guest'
+      password: 'guest'

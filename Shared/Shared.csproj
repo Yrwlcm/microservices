@@ -27,4 +27,8 @@
       <Compile Remove="Class1.cs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Outbox\Outbox.csproj" />
+    </ItemGroup>
+
 </Project>

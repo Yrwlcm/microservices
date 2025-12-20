@@ -29,10 +29,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Outbox\Outbox.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Infrastructure\Consumers\" />
+      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
 </Project>

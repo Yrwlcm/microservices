@@ -4,6 +4,8 @@ using Outbox.Services;
 using PaymentService;
 using PaymentService.Extensions;
 using PaymentService.Infrastructure;
+using PaymentService.Infrastructure.Consumers;
+using Rebus.Config;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +31,7 @@ builder.Services.AddRequestum(setup =>
     setup.Default(typeof(Program).Assembly);
     setup.RequireEventHandlers = true;
 });
+builder.Services.AutoRegisterHandlersFromAssemblyOf<PaymentRequestsConsumer>();
 builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddHostedService<OutboxProcessor<PaymentDbContext>>();
 var app = builder.Build();

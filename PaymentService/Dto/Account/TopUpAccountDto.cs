@@ -1,3 +1,3 @@
 namespace PaymentService.Dto.Account;
 
-public record TopUpAccountDto(int Amount);
+public record TopUpAccountDto(decimal Amount);

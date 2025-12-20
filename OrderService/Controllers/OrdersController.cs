@@ -5,7 +5,7 @@ namespace OrderService.Controllers;
 
 [ApiController]
 [Route("order")]
-public class OrdersController(OrderRequestValidator validator, IOrderPublisher publisher) : ControllerBase
+public class OrdersController(IOrderPublisher publisher) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]

@@ -49,7 +49,7 @@ public class CreatePaymentHandler(PaymentDbContext paymentDbContext, ILogger log
     }
 
     private async Task<TransactionResult> FinalizePaymentTransactionAsync(IDbContextTransaction dbContextTransaction, AccountId accountId,
-        OrderId orderId, DateTime? finishedOnUtc, PaymentStatus paymentStatus, int orderPrice, CancellationToken cancellationToken)
+        OrderId orderId, DateTime? finishedOnUtc, PaymentStatus paymentStatus, decimal orderPrice, CancellationToken cancellationToken)
     {
         var paymentCreateDto = new CreatePaymentDto(accountId, orderId, finishedOnUtc ?? DateTime.UtcNow, paymentStatus,
             orderPrice);
@@ -77,6 +77,6 @@ public class CreatePaymentHandler(PaymentDbContext paymentDbContext, ILogger log
     }
 }
 
-public record CreatePaymentCommand(IDbContextTransaction Transaction, Guid AccountId, Guid OrderId, int Price) : ICommand<TransactionResult>;
+public record CreatePaymentCommand(IDbContextTransaction Transaction, Guid AccountId, Guid OrderId, decimal Price) : ICommand<TransactionResult>;
 
 public record TransactionResult(Result Result, bool WasRolledBack);

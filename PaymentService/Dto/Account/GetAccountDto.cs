@@ -1,3 +1,3 @@
 namespace PaymentService.Dto.Account;
 
-public record GetAccountDto(Guid AccountId, int Balance);
+public record GetAccountDto(Guid AccountId, decimal Balance);

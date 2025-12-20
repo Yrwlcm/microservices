@@ -37,4 +37,4 @@ public class TopUpAccountHandler(PaymentDbContext paymentDbContext, ILogger logg
     }
 }
 
-public record TopUpAccountCommand(Guid AccountId, int Amount) : ICommand<Result>;
+public record TopUpAccountCommand(Guid AccountId, decimal Amount) : ICommand<Result>;

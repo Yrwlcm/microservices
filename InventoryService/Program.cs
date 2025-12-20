@@ -2,8 +2,10 @@ using System.Reflection;
 using InventoryService;
 using InventoryService.Extensions;
 using InventoryService.Infrastructure;
+using InventoryService.Infrastructure.Consumers;
 using Microsoft.OpenApi.Models;
 using Outbox.Services;
+using Rebus.Config;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,7 @@ builder.Host.UseSerilog((context, configuration) =>
 });
 builder.Services.AddServices();
 builder.Services.AddRequestum();
+builder.Services.AutoRegisterHandlersFromAssemblyOf<ReserveStockRequestsConsumer>();
 builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddHostedService<OutboxProcessor<InventoryDbContext>>();
 var app = builder.Build();

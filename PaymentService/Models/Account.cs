@@ -6,7 +6,7 @@ namespace PaymentService.Models;
 public class Account
 {
     public AccountId Id { get; private set; }
-    public int Balance { get; private set; }
+    public decimal Balance { get; private set; }
 
     public byte[]? RowVersion { get; private set; }
 
@@ -24,7 +24,7 @@ public class Account
         };
     }
 
-    public Result AddMoney(int amount)
+    public Result AddMoney(decimal amount)
     {
         if (amount <= 0)
             return Result.Failure("Добавляемая сумма должна быть положительной");
@@ -32,7 +32,7 @@ public class Account
         return Result.Success();
     }
 
-    public Result TakeMoney(int amount)
+    public Result TakeMoney(decimal amount)
     {
         if (amount < 0)
             return Result.Failure("Нельзя снять с баланса отрицательную сумму");

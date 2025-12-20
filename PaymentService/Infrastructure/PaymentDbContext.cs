@@ -12,7 +12,7 @@ public class PaymentDbContext(DbContextOptions<PaymentDbContext> options) : DbCo
     public DbSet<Payment> Payments { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
     public DbSet<OutboxProcessedMessage> OutboxProcessedMessages { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseOutbox();

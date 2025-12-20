@@ -28,6 +28,7 @@ builder.Services.AddSwaggerGen(setup =>
 });
 builder.Services.AddRequestum(setup =>
 {
+    setup.Lifetime = ServiceLifetime.Scoped;
     setup.Default(typeof(Program).Assembly);
     setup.RequireEventHandlers = true;
 });

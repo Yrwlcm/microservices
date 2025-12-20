@@ -1,12 +1,13 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using PaymentService.Application.Handlers.Payment;
 using PaymentService.Dto.Account;
 using PaymentService.Enums;
 using PaymentService.Infrastructure;
-using Serilog;
+using PaymentService.Infrastructure.Consumers;
 
 namespace PaymentService.Tests.HandlersTests.Payment;
 
@@ -14,7 +15,7 @@ namespace PaymentService.Tests.HandlersTests.Payment;
 public class CreatePaymentHandlerTests
 {
     private PaymentDbContext _context = null!;
-    private ILogger _logger = null!;
+    private ILogger<CreatePaymentHandler> _logger = null!;
 
     [SetUp]
     public void SetUp()
@@ -24,7 +25,7 @@ public class CreatePaymentHandlerTests
             .ConfigureWarnings(warningsBuilder => warningsBuilder.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
         _context = new PaymentDbContext(options);
-        _logger = Substitute.For<ILogger>();
+        _logger = Substitute.For<ILogger<CreatePaymentHandler>>();
     }
 
     [TearDown]
@@ -35,11 +36,11 @@ public class CreatePaymentHandlerTests
     {
         var handler = new CreatePaymentHandler(_context, _logger);
         await using var transaction = await _context.Database.BeginTransactionAsync();
-        var cmd = new CreatePaymentCommand(transaction, Guid.NewGuid(), Guid.NewGuid(), 500);
+        var cmd = new CreatePaymentCommand(Guid.NewGuid(), Guid.NewGuid(), 500);
 
         var result = await handler.ExecuteAsync(cmd);
         await transaction.CommitAsync();
-        result.Result.IsFailure.Should().BeTrue();
+        result.IsFailure.Should().BeTrue();
         var payment = await _context.Payments.SingleAsync();
         payment.PaymentStatus.Should().Be(PaymentStatus.MissingAccountFailure);
         payment.OrderPrice.Should().Be(500);
@@ -53,11 +54,11 @@ public class CreatePaymentHandlerTests
         await _context.SaveChangesAsync();
         await using var transaction = await _context.Database.BeginTransactionAsync();
         var handler = new CreatePaymentHandler(_context, _logger);
-        var cmd = new CreatePaymentCommand(transaction, acc.Id.Value, Guid.NewGuid(), 500);
+        var cmd = new CreatePaymentCommand(acc.Id.Value, Guid.NewGuid(), 500);
 
         var result = await handler.ExecuteAsync(cmd);
         await transaction.CommitAsync();
-        result.Result.IsFailure.Should().BeTrue();
+        result.IsFailure.Should().BeTrue();
         (await _context.Payments.CountAsync()).Should().Be(1);
         var payment = await _context.Payments.FirstAsync();
         payment.PaymentStatus.Should().Be(PaymentStatus.LowBalanceFailure);
@@ -73,11 +74,11 @@ public class CreatePaymentHandlerTests
         await _context.SaveChangesAsync();
 
         var handler = new CreatePaymentHandler(_context, _logger);
-        var cmd = new CreatePaymentCommand(transaction, acc.Id.Value, Guid.NewGuid(), 400);
+        var cmd = new CreatePaymentCommand(acc.Id.Value, Guid.NewGuid(), 400);
 
         var result = await handler.ExecuteAsync(cmd);
         
-        result.Result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.Should().BeTrue();
         await transaction.CommitAsync();
         var updatedAcc = await _context.Accounts.FirstAsync();
         updatedAcc.Balance.Should().Be(600);

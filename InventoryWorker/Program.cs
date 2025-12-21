@@ -1,4 +1,4 @@
-using Contracts.Messages;
+using Contracts.Messages.Events;
 using InventoryWorker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Rebus.Bus;
 using Rebus.Config;
 using Serilog;
+using Shared.Logging;
 
 using var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((context, config) =>
@@ -15,10 +16,11 @@ using var host = Host.CreateDefaultBuilder(args)
             .AddJsonFile("Serilog.json", optional: true, reloadOnChange: false)
             .AddEnvironmentVariables();
     })
-    .UseSerilog((context, services, configuration) => configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext())
+    .UseSharedSerilog()
+    // .UseSerilog((context, services, configuration) => configuration
+    //     .ReadFrom.Configuration(context.Configuration)
+    //     .ReadFrom.Services(services)
+    //     .Enrich.FromLogContext())
     .ConfigureServices((context, services) =>
     {
         services.AddSingleton(Random.Shared);

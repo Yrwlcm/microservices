@@ -1,4 +1,4 @@
-﻿using Contracts.Messages;
+﻿using Contracts.Messages.Events;
 using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
 

@@ -1,7 +1,7 @@
 name: order-sample
 services:
   rabbitmq:
-    image: rabbitmq:3.13-management
+    image: rabbitmq:3.13-management-alpine
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -12,34 +12,184 @@ services:
       retries: 5
     networks:
       - app-network
+      - monitoring-network
 
   orders-api:
     build:
       context: .
       dockerfile: OrderService/Dockerfile
     environment:
-      ASPNETCORE_URLS: http://+:8080
-      Rabbit__ConnectionString: amqp://guest:guest@rabbitmq:5672/
+      - ASPNETCORE_URLS=http://+:8080
+      - Rabbit__ConnectionString=amqp://guest:guest@rabbitmq:5672/
+      - Seq__Url=http://seq:5341
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=orders;Username=postgres;Password=postgres
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      database:
         condition: service_healthy
     ports:
       - "8080:8080"
     networks:
       - app-network
+      - monitoring-network
+
+  inventory-api:
+    build:
+      context: .
+      dockerfile: InventoryService/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - Rabbit__ConnectionString=amqp://guest:guest@rabbitmq:5672/
+      - Seq__Url=http://seq:5341
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=inventory;Username=postgres;Password=postgres
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      database:
+        condition: service_healthy
+    ports:
+      - "8089:8080"
+    networks:
+      - app-network
+      - monitoring-network
+
+  payment-api:
+    build:
+      context: .
+      dockerfile: PaymentService/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - Rabbit__ConnectionString=amqp://guest:guest@rabbitmq:5672/
+      - Seq__Url=http://seq:5341
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=payments;Username=postgres;Password=postgres
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      database:
+        condition: service_healthy
+    ports:
+      - "8087:8080"
+    networks:
+      - app-network
+      - monitoring-network
+
+  database:
+    image: postgres:18.0-alpine3.21
+    container_name: Database
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+      POSTGRES_MULTIPLE_DATABASES: orders,inventory,payments
+    volumes:
+      - order_microservices_postgres_volume:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   inventory-worker:
     build:
       context: .
       dockerfile: InventoryWorker/Dockerfile
     environment:
-      Rabbit__ConnectionString: amqp://guest:guest@rabbitmq:5672/
+      - Rabbit__ConnectionString=amqp://guest:guest@rabbitmq:5672/
+      - Seq__Url=http://seq:5341
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=inventory;Username=postgres;Password=postgres
     depends_on:
       rabbitmq:
         condition: service_healthy
+      database:
+        condition: service_healthy
     networks:
       - app-network
+      - monitoring-network
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=admin # 12345678!
+    ports:
+      - "5341:5341"
+      - "8081:80"
+    volumes:
+      - seq_data:/data
+    networks:
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5341/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/console_templates'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring-network
+    depends_on:
+      - seq
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - monitoring-network
+    depends_on:
+      - prometheus
+      - seq
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   app-network:
     driver: bridge
+  monitoring-network:
+    driver: bridge
+
+volumes:
+  order_microservices_postgres_volume:
+  seq_data:
+  prometheus_data:
+  grafana_data:

@@ -4,6 +4,9 @@ namespace OrderService.Models.Orders;
 
 public class OrderRequest
 {
+    [Required] 
+    public Guid AccountId { get; init; }
+
     [Required]
     public Guid OrderId { get; init; }
 

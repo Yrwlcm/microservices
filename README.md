@@ -28,7 +28,7 @@ Swagger UI доступен после запуска по адресу http://l
 ```bash
 curl -X POST http://localhost:8080/order \
   -H "Content-Type: application/json" \
-  -d '{"orderId":"8f6a7e6a-3f7f-4f0b-b1ea-1f1b1a1a1a1a","items":[{"sku":"ABC","qty":2},{"sku":"XYZ","qty":1}]}'
+  -d '{"orderId":"8f6a7e6a-3f7f-4f0b-b1ea-1f1b1a1a1a1a","items":[{"sku":"ABC","quantity":2},{"sku":"XYZ","quantity":1}]}'
 ```
 
 Ожидается ответ `202 Accepted`, а в логах контейнера `inventory-worker` должно появиться сообщение о получении заказа.

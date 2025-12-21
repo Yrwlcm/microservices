@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -9,6 +9,20 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InventoryWorker", "InventoryWorker\InventoryWorker.csproj", "{33E38639-0E0E-4C5F-BF5E-5B52E8761928}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Tests", "OrderService.Tests\OrderService.Tests.csproj", "{B2C6D612-0EE8-4917-BB35-79F8F5AC131A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryService", "InventoryService\InventoryService.csproj", "{41375A3E-0FA4-4FDA-9BDE-D7D5502A70CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryService.Tests", "InventoryService.Tests\InventoryService.Tests.csproj", "{8D67A925-2646-4C30-AB23-3FB2F86F99B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService", "PaymentService\PaymentService.csproj", "{81709ECB-2F3A-44C8-8C9A-61BF1CE5E44C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Tests", "PaymentService.Tests\PaymentService.Tests.csproj", "{57F07CB4-9062-4344-86CB-66ED77A1D541}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox", "Outbox\Outbox.csproj", "{BD926F19-5604-404C-9784-49517AAA53A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox.Tests", "Outbox.Tests\Outbox.Tests.csproj", "{50341CE6-C24B-415D-B4DA-BDDDC405256F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +46,34 @@ Global
 		{B2C6D612-0EE8-4917-BB35-79F8F5AC131A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C6D612-0EE8-4917-BB35-79F8F5AC131A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2C6D612-0EE8-4917-BB35-79F8F5AC131A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41375A3E-0FA4-4FDA-9BDE-D7D5502A70CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41375A3E-0FA4-4FDA-9BDE-D7D5502A70CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41375A3E-0FA4-4FDA-9BDE-D7D5502A70CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41375A3E-0FA4-4FDA-9BDE-D7D5502A70CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D67A925-2646-4C30-AB23-3FB2F86F99B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D67A925-2646-4C30-AB23-3FB2F86F99B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D67A925-2646-4C30-AB23-3FB2F86F99B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D67A925-2646-4C30-AB23-3FB2F86F99B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81709ECB-2F3A-44C8-8C9A-61BF1CE5E44C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81709ECB-2F3A-44C8-8C9A-61BF1CE5E44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81709ECB-2F3A-44C8-8C9A-61BF1CE5E44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81709ECB-2F3A-44C8-8C9A-61BF1CE5E44C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57F07CB4-9062-4344-86CB-66ED77A1D541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57F07CB4-9062-4344-86CB-66ED77A1D541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57F07CB4-9062-4344-86CB-66ED77A1D541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57F07CB4-9062-4344-86CB-66ED77A1D541}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD926F19-5604-404C-9784-49517AAA53A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD926F19-5604-404C-9784-49517AAA53A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD926F19-5604-404C-9784-49517AAA53A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD926F19-5604-404C-9784-49517AAA53A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50341CE6-C24B-415D-B4DA-BDDDC405256F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

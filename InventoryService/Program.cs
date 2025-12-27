@@ -5,6 +5,7 @@ using InventoryService.Infrastructure;
 using InventoryService.Infrastructure.Consumers;
 using Microsoft.OpenApi.Models;
 using Outbox.Services;
+using Prometheus;
 using Rebus.Config;
 using Serilog;
 
@@ -34,6 +35,10 @@ builder.Services.AutoRegisterHandlersFromAssemblyOf<ReserveStockRequestsConsumer
 builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddHostedService<OutboxProcessor<InventoryDbContext>>();
 var app = builder.Build();
+
+app.UseRouting();
+app.UseHttpMetrics();
+
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
@@ -45,4 +50,5 @@ app.UseSerilogRequestLogging();
 MigrationsRunner.ApplyMigrations(app.Services);
 await BusSubscriber.SubscribeToMessagesAsync(app.Services);
 app.MapControllers();
+app.MapMetrics();
 app.Run();

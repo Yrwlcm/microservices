@@ -1,4 +1,5 @@
 using OrderService.Models.Orders;
+using Prometheus;
 using Rebus.Config;
 using Serilog;
 using Shared.Logging;
@@ -42,6 +43,9 @@ if (!isTesting)
 
 var app = builder.Build();
 
+app.UseRouting();
+app.UseHttpMetrics();
+
 app.Lifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
 app.UseSerilogRequestLogging();
@@ -58,6 +62,7 @@ app.MapHealthChecks("/healthz");
 
 app.MapGet("/", () => Results.Redirect("/swagger"))
     .ExcludeFromDescription();
+app.MapMetrics();
 
 app.Run();
 

@@ -5,6 +5,7 @@ using PaymentService;
 using PaymentService.Extensions;
 using PaymentService.Infrastructure;
 using PaymentService.Infrastructure.Consumers;
+using Prometheus;
 using Rebus.Config;
 using Serilog;
 
@@ -36,6 +37,10 @@ builder.Services.AutoRegisterHandlersFromAssemblyOf<PaymentRequestsConsumer>();
 builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddHostedService<OutboxProcessor<PaymentDbContext>>();
 var app = builder.Build();
+
+app.UseRouting();
+app.UseHttpMetrics();
+
 app.UseSwagger();
 app.UseSwaggerUI(setup => 
 {
@@ -47,4 +52,7 @@ app.UseHttpsRedirection();
 app.MapControllers();
 MigrationsRunner.ApplyMigrations(app.Services);
 await BusSubscriber.SubscribeToMessagesAsync(app.Services);
+
+app.MapMetrics();
+
 app.Run();

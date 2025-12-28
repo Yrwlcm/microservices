@@ -17,10 +17,6 @@ using var host = Host.CreateDefaultBuilder(args)
             .AddEnvironmentVariables();
     })
     .UseSharedSerilog()
-    // .UseSerilog((context, services, configuration) => configuration
-    //     .ReadFrom.Configuration(context.Configuration)
-    //     .ReadFrom.Services(services)
-    //     .Enrich.FromLogContext())
     .ConfigureServices((context, services) =>
     {
         services.AddSingleton(Random.Shared);

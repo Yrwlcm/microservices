@@ -16,7 +16,7 @@ public static class OutboxDbContextExtensions
         try
         {
             var payloadSerialized = JsonSerializer.Serialize(payload, JsonOptions.JsonSerializerOptions);
-            var outboxMessage = new OutboxMessage()
+            var outboxMessage = new OutboxMessage
             {
                 PayloadType = payloadType,
                 Payload = payloadSerialized,
@@ -59,7 +59,7 @@ public static class OutboxDbContextExtensions
     public static async Task AddProcessedMessageAsync(this IOutboxDbContext outboxDbContext, Guid messageId,
         string consumerName)
     {
-        var processedMessageModel = new OutboxProcessedMessage()
+        var processedMessageModel = new OutboxProcessedMessage
         {
             MessageId = messageId,
             ConsumerName = consumerName,

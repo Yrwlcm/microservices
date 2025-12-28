@@ -1,9 +1,12 @@
 using OrderService.Models.Orders;
+using Prometheus;
 using Rebus.Config;
 using Serilog;
 using Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSharedSerilog();
 
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -21,6 +24,8 @@ builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSingleton<OrderRequestValidator>();
 builder.Services.AddSingleton<OrderMessageFactory>();
@@ -42,6 +47,9 @@ if (!isTesting)
 
 var app = builder.Build();
 
+app.UseRouting();
+app.UseHttpMetrics();
+
 app.Lifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
 app.UseSerilogRequestLogging();
@@ -58,6 +66,7 @@ app.MapHealthChecks("/healthz");
 
 app.MapGet("/", () => Results.Redirect("/swagger"))
     .ExcludeFromDescription();
+app.MapMetrics();
 
 app.Run();
 

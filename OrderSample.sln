@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Outbox.Tests", "Outbox.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "NotificationService\NotificationService.csproj", "{247EB13B-20AB-4311-BBC8-B0235945DF43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51237D1B-FD8A-4723-B183-90CEEDFDA7FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{247EB13B-20AB-4311-BBC8-B0235945DF43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{247EB13B-20AB-4311-BBC8-B0235945DF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{247EB13B-20AB-4311-BBC8-B0235945DF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{247EB13B-20AB-4311-BBC8-B0235945DF43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

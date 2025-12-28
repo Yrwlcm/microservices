@@ -30,10 +30,8 @@ where TDbContext : DbContext, IOutboxDbContext
             var message = nextOutboxMessageResult.OutboxMessage!;
             if (nextOutboxMessageResult.Outcome == GetOutboxMessageOutcome.UnknownPayloadType)
             {
-                logger.LogError("Сообщение {outboxGuid} в таблице Outbox не может быть обработано: неизвестный тип сообщения",
-                    message.Id);
-                await UpdateOutboxMessageAsync(dbContext, message.Id,
-                    () => message.MarkAsFailed("Неизвестный тип сообщения"), stoppingToken);
+                logger.LogError("Сообщение {outboxGuid} в таблице Outbox не может быть обработано: неизвестный тип сообщения", message.Id);
+                await UpdateOutboxMessageAsync(dbContext, message.Id, () => message.MarkAsFailed("Неизвестный тип сообщения"), stoppingToken);
                 await Task.Yield();
                 continue;
             }

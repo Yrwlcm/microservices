@@ -6,6 +6,8 @@ using Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSharedSerilog();
+
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
     .AddJsonFile("Serilog.json", optional: true, reloadOnChange: false)
@@ -22,6 +24,8 @@ builder.Services.AddHealthChecks();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSingleton<OrderRequestValidator>();
 builder.Services.AddSingleton<OrderMessageFactory>();

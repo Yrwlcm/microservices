@@ -8,11 +8,11 @@ using PaymentService.Infrastructure.Consumers;
 using Prometheus;
 using Rebus.Config;
 using Serilog;
+using Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((context, config) =>
-    config.ReadFrom.Configuration(context.Configuration));
+builder.Host.UseSharedSerilog();
 builder.Services.AddControllers();
 builder.Services.AddPaymentDbContext(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
@@ -33,6 +33,9 @@ builder.Services.AddRequestum(setup =>
     setup.Default(typeof(Program).Assembly);
     setup.RequireEventHandlers = true;
 });
+
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AutoRegisterHandlersFromAssemblyOf<PaymentRequestsConsumer>();
 builder.Services.AddRebus(builder.Configuration);
 builder.Services.AddHostedService<OutboxProcessor<PaymentDbContext>>();

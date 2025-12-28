@@ -8,7 +8,7 @@ public class OrderPublisher(IBus bus, ILogger<OrderPublisher> logger) : IOrderPu
     {
         var reserveStockRequest = OrderMessageFactory.Create(request);
 
-        logger.LogInformation("Requesting reserving items for order {OrderId} with {ItemCount} item(s)", request.OrderId, reserveStockRequest.Items.Count);
+        logger.LogInformation("Создан заказ {OrderId} с {ItemCount} позициями", request.OrderId, reserveStockRequest.Items.Count);
 
         cancellationToken.ThrowIfCancellationRequested();
         await bus.Publish(reserveStockRequest);

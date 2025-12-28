@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Contracts.Messages.Events;
+using Contracts.Messages.Requests;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -43,7 +44,7 @@ public class OrderEndpointTests
         response.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
         var bus = factory.Services.GetRequiredService<IBus>();
-        await bus.Received(1).Publish(Arg.Is<OrderCreated>(m => m.Items.Count == 1));
+        await bus.Received(1).Publish(Arg.Is<ReserveStockRequest>(m => m.Items.Count == 1));
     }
 
     [Test]

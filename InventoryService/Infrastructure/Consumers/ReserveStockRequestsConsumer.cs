@@ -2,21 +2,24 @@ using Contracts.Messages.Events;
 using Contracts.Messages.Requests;
 using CSharpFunctionalExtensions;
 using InventoryService.Application.Handlers;
-using InventoryService.Dto;
+using JetBrains.Annotations;
 using Outbox.Extensions;
 using Rebus.Handlers;
 using Requestum;
 
 namespace InventoryService.Infrastructure.Consumers;
 
+[UsedImplicitly]
 public class ReserveStockRequestsConsumer(IRequestum requestum,
     InventoryDbContext inventoryDbContext,
     ILogger<ReserveStockRequestsConsumer> logger) : IHandleMessages<ReserveStockRequest>
 {
     public async Task Handle(ReserveStockRequest message)
     {
+        logger.LogInformation("Обработка заказа {orderId}", message.OrderId);
         var hasProcessedMessage = await inventoryDbContext.HasProcessedMessageAsync(message.OrderId, GetType().Name);
-        if (hasProcessedMessage) return;
+        // if (hasProcessedMessage) return;
+        logger.LogWarning("hasProcessedMessage: {HasProcessedMessage}", hasProcessedMessage);
         var reserveGoodsCommand = new ReserveGoodsCommand(message.Items.Select(Utils.OrderItemToGoodItem).ToList());
         var reserveStockResult = await requestum.ExecuteAsync<ReserveGoodsCommand, Result<decimal>>(reserveGoodsCommand);
         if (reserveStockResult.IsFailure)

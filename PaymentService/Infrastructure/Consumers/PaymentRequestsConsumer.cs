@@ -1,15 +1,15 @@
 using Contracts.Messages.Events;
 using Contracts.Messages.Requests;
 using CSharpFunctionalExtensions;
-using Microsoft.VisualBasic.CompilerServices;
 using Outbox.Extensions;
 using PaymentService.Application.Handlers.Payment;
+using Rebus.Bus;
 using Rebus.Handlers;
 using Requestum;
 
 namespace PaymentService.Infrastructure.Consumers;
 
-public class PaymentRequestsConsumer(IRequestum requestum, PaymentDbContext paymentDbContext,
+public class PaymentRequestsConsumer(IRequestum requestum, PaymentDbContext paymentDbContext, IBus bus,
     ILogger<PaymentRequestsConsumer> logger) : IHandleMessages<PaymentRequest>
 {
     public async Task Handle(PaymentRequest message)
@@ -25,12 +25,22 @@ public class PaymentRequestsConsumer(IRequestum requestum, PaymentDbContext paym
             {
                 logger.LogError("Не удалось оплатить заказ {orderId}: {reason}", message.OrderId,
                     createPaymentResult.Error);
+                var notification = new PaymentCompletedNotification {
+                    Success = false,
+                    OrderId =  message.OrderId
+                };
+                await bus.Publish(notification);
                 await Shared.Utils.TryAddOutboxMessageAsync(paymentDbContext, logger, nameof(PaymentFailed),
                     new PaymentFailed(message.OrderId));
             }
             else
             {
                 logger.LogInformation("Заказ {orderId} успешно оплачен", message.OrderId);
+                var notification = new PaymentCompletedNotification {
+                    Success = true,
+                    OrderId =  message.OrderId
+                };
+                await bus.Publish(notification);
                 await Shared.Utils.TryAddOutboxMessageAsync(paymentDbContext, logger, nameof(PaymentSucceeded),
                     new PaymentSucceeded(message.OrderId));
             }
@@ -42,6 +52,11 @@ public class PaymentRequestsConsumer(IRequestum requestum, PaymentDbContext paym
         catch (Exception e)
         {
             logger.LogError(e, "Не удалось оплатить заказ {orderId}", message.OrderId);
+            var notification = new PaymentCompletedNotification {
+                Success = false,
+                OrderId =  message.OrderId
+            };
+            await bus.Publish(notification);
             await transaction.RollbackAsync();
             throw;
         }

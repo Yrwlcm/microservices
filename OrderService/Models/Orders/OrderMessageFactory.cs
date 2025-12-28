@@ -13,4 +13,11 @@ public class OrderMessageFactory
 
         return new ReserveStockRequest(request.OrderId, items);
     }
+
+    public static OrderCreatedNotification CreatedNotification(ReserveStockRequest request) => new()
+    {
+        OrderId = request.OrderId,
+        Amount = request.Items.Sum(i => i.Quantity),
+        Items = request.Items.Select(i => $"{i.Sku} (x{i.Quantity})").ToList()
+    };
 }
